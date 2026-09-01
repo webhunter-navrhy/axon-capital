@@ -60,6 +60,48 @@ button{border:none;background:none;font:inherit;cursor:pointer;padding:0}
 .cs-list::-webkit-scrollbar{width:4px}
 .cs-list::-webkit-scrollbar-track{background:transparent}
 .cs-list::-webkit-scrollbar-thumb{background:rgba(14,26,60,.15);border-radius:2px}
+
+/* Page load */
+body{opacity:0;transition:opacity .6s ease}
+body.loaded{opacity:1}
+
+/* Progress bar smooth */
+#axon-progress{transition:width .12s ease-out}
+
+/* Header scroll state */
+header{transition:box-shadow .4s ease,border-color .4s ease}
+header.scrolled{box-shadow:0 4px 30px -8px rgba(14,26,60,.1);border-color:transparent !important}
+
+/* Focus */
+a:focus-visible,button:focus-visible{outline:2px solid #C0A15A;outline-offset:3px;border-radius:4px}
+
+/* Active nav */
+.nav-link.active{color:#0E1A3C !important;font-weight:500}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:28px;height:28px;cursor:pointer;margin-left:auto;flex-shrink:0;padding:2px}
+.hamburger span{display:block;width:100%;height:1.5px;background:#0E1A3C;transition:all .3s ease;transform-origin:center}
+.hamburger.open span:first-child{transform:translateY(6.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:last-child{transform:translateY(-6.5px) rotate(-45deg)}
+@media(max-width:1000px){
+  .hamburger{display:flex}
+}
+
+/* Mobile nav overlay */
+.mobile-nav{position:fixed;inset:0;top:67px;background:rgba(252,252,251,.97);backdrop-filter:blur(20px);z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.mobile-nav.open{opacity:1;pointer-events:auto}
+.mobile-nav a{font-family:'Playfair Display',serif;font-size:28px;color:#0E1A3C;transition:color .3s ease}
+.mobile-nav a:hover{color:#B08D46}
+
+/* Content transitions */
+#pillar-detail,#pillar-features,#cs-detail-content{transition:opacity .3s ease}
+.content-fade{opacity:0 !important}
+
+/* Subtle gold separator for hero stats */
+.hero-stats>div+div{position:relative}
+.hero-stats>div+div::before{content:'';position:absolute;left:-32px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,transparent,#C0A15A,transparent)}
+@media(max-width:768px){.hero-stats>div+div::before{display:none}}
 </style>
 </head>
 <body>
@@ -83,8 +125,19 @@ button{border:none;background:none;font:inherit;cursor:pointer;padding:0}
       <a href="#vyhled" class="nav-link" style="color:#5A6280;transition:color .3s ease">Výhled</a>
     </nav>
     <a href="#kontakt" class="cta-btn header-cta" style="font-size:13px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;border:1px solid #16255A;color:#16255A;padding:11px 22px;border-radius:999px;transition:all .35s ease">Spojit se</a>
+    <div class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><span></span><span></span><span></span></div>
   </div>
 </header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#problem" onclick="closeMobileNav()">Východisko</a>
+  <a href="#ekosystem" onclick="closeMobileNav()">Ekosystém</a>
+  <a href="#vysledky" onclick="closeMobileNav()">Výsledky</a>
+  <a href="#casestudies" onclick="closeMobileNav()">Case studies</a>
+  <a href="#portfolio" onclick="closeMobileNav()">Portfolio</a>
+  <a href="#vyhled" onclick="closeMobileNav()">Výhled</a>
+  <a href="#kontakt" onclick="closeMobileNav()" style="margin-top:12px;font-size:16px;letter-spacing:.1em;text-transform:uppercase;border:1px solid #16255A;color:#16255A;padding:14px 30px;border-radius:999px;font-family:'Jost',sans-serif">Spojit se</a>
+</div>
 
 <main id="top" style="overflow-x:hidden">
 
@@ -375,7 +428,7 @@ button{border:none;background:none;font:inherit;cursor:pointer;padding:0}
       <div style="margin-top:96px;padding-top:28px;border-top:1px solid rgba(237,239,245,.14);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:13px;color:#8A90A3;font-weight:300">
         <div style="display:flex;align-items:center;gap:12px">
           <span style="font-family:'Playfair Display',serif;font-size:18px;color:#EDEFF5">Axon Capital a.s.</span>
-          <span>www.axoncapital.eu</span>
+          <span>© <script>document.write(new Date().getFullYear())</script> · www.axoncapital.eu</span>
         </div>
         <div>Uvedená čísla a projekce jsou odhady a mohou se od skutečnosti lišit.</div>
       </div>
@@ -592,7 +645,11 @@ function renderCycleBar(){
   }).join('')+'<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8A90A3">cyklus se opakuje</div>';
 }
 
-function setActiveTab(n){activeTab=n;renderPillarTabs();renderPillarDetail();renderCycleBar();}
+function setActiveTab(n){
+  var det=document.getElementById('pillar-detail'),feat=document.getElementById('pillar-features');
+  if(det)det.classList.add('content-fade');if(feat)feat.classList.add('content-fade');
+  setTimeout(function(){activeTab=n;renderPillarTabs();renderPillarDetail();renderCycleBar();if(det)det.classList.remove('content-fade');if(feat)feat.classList.remove('content-fade');},200);
+}
 
 // ── Case Studies ──
 function getVisibleCases(){return CASES.filter(function(c){return csCat==='Vše'||c.cat===csCat;});}
@@ -640,7 +697,11 @@ function setCaseFilter(cat){
   if(v.length>0&&v.indexOf(CASES[csActiveIdx])===-1)csActiveIdx=CASES.indexOf(v[0]);
   renderCaseFilters();renderCaseList();renderCaseDetail();
 }
-function setCaseActive(idx){csActiveIdx=idx;renderCaseList();renderCaseDetail();}
+function setCaseActive(idx){
+  var det=document.getElementById('cs-detail-content');
+  if(det)det.classList.add('content-fade');
+  setTimeout(function(){csActiveIdx=idx;renderCaseList();renderCaseDetail();if(det)det.classList.remove('content-fade');},200);
+}
 
 // ── Portfolio ──
 function renderPortfolio(){
@@ -704,6 +765,20 @@ function setupObservers(){
   document.querySelectorAll('[data-count]').forEach(function(el){co.observe(el);});
 }
 
+// ── Mobile Nav ──
+function toggleMobileNav(){
+  var ham=document.querySelector('.hamburger'),nav=document.getElementById('mobile-nav');
+  if(!ham||!nav)return;
+  ham.classList.toggle('open');nav.classList.toggle('open');
+  document.body.style.overflow=nav.classList.contains('open')?'hidden':'';
+}
+function closeMobileNav(){
+  var ham=document.querySelector('.hamburger'),nav=document.getElementById('mobile-nav');
+  if(!ham||!nav)return;
+  ham.classList.remove('open');nav.classList.remove('open');
+  document.body.style.overflow='';
+}
+
 // ── Init ──
 document.addEventListener('DOMContentLoaded',function(){
   renderHeroPillars();renderPillarTabs();renderPillarDetail();renderCycleBar();
@@ -715,7 +790,34 @@ document.addEventListener('DOMContentLoaded',function(){
   field(document.getElementById('axon-footer-canvas'),{lines:44,navy:'#7C8CB8',gold:'#C0A15A',alpha:.46,amp:.26,spread:.4,speed:.00009});
   field(document.getElementById('axon-pillar-canvas'),{lines:40,alpha:.45,amp:.26,spread:.42,speed:.00022});
   field(document.getElementById('axon-case-canvas'),{lines:36,alpha:.4,amp:.26,spread:.44,speed:.0002});
-  window.addEventListener('scroll',function(){var se=document.scrollingElement||document.documentElement;var p=se.scrollTop/Math.max(1,se.scrollHeight-se.clientHeight);var bar=document.getElementById('axon-progress');if(bar)bar.style.width=(Math.min(1,Math.max(0,p))*100).toFixed(2)+'%';},{passive:true});
+
+  // Page load fade-in
+  requestAnimationFrame(function(){document.body.classList.add('loaded');});
+
+  // Scroll: progress bar + header shadow
+  var hdr=document.querySelector('header');
+  window.addEventListener('scroll',function(){
+    var se=document.scrollingElement||document.documentElement;
+    var p=se.scrollTop/Math.max(1,se.scrollHeight-se.clientHeight);
+    var bar=document.getElementById('axon-progress');
+    if(bar)bar.style.width=(Math.min(1,Math.max(0,p))*100).toFixed(2)+'%';
+    if(hdr){if(se.scrollTop>30)hdr.classList.add('scrolled');else hdr.classList.remove('scrolled');}
+  },{passive:true});
+
+  // Active nav link tracking
+  var navLinks=document.querySelectorAll('.nav-link');
+  var sections=[];navLinks.forEach(function(a){var id=a.getAttribute('href');if(id&&id.charAt(0)==='#'){var el=document.getElementById(id.slice(1));if(el)sections.push({el:el,link:a});}});
+  if(sections.length){
+    var nio=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){e.target._axonVisible=e.isIntersecting;});
+      var active=null;
+      for(var i=0;i<sections.length;i++){if(sections[i].el._axonVisible){active=sections[i];break;}}
+      navLinks.forEach(function(a){a.classList.remove('active');});
+      if(active)active.link.classList.add('active');
+    },{threshold:0,rootMargin:'-20% 0px -60% 0px'});
+    sections.forEach(function(s){nio.observe(s.el);});
+  }
+
   requestAnimationFrame(function(){setupObservers();});
 });
 </script>
