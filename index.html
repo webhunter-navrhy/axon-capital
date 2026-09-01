@@ -761,8 +761,8 @@ function renderCaseList(){
 }
 
 function syncCsHeight(){
-  var panel=document.getElementById('cs-detail-panel'),wrap=document.getElementById('cs-list-wrap');
-  if(panel&&wrap){wrap.style.maxHeight=panel.offsetHeight+'px';}
+  var content=document.getElementById('cs-detail-content'),wrap=document.getElementById('cs-list-wrap');
+  if(content&&wrap){wrap.style.maxHeight=(content.scrollHeight+100)+'px';}
 }
 
 function renderCaseDetail(){
