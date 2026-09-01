@@ -1,0 +1,16 @@
+# Claude Design source files
+*.dc.html
+support.js
+.thumbnail
+
+# Uploaded source files
+uploads/
+
+# PDF case studies (too large for GH Pages)
+*.pdf
+
+# macOS
+.DS_Store
+
+# Test files
+logo-crop-test.png
