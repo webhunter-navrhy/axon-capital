@@ -102,6 +102,36 @@ a:focus-visible,button:focus-visible{outline:2px solid #C0A15A;outline-offset:3p
 .hero-stats>div+div{position:relative}
 .hero-stats>div+div::before{content:'';position:absolute;left:-32px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,transparent,#C0A15A,transparent)}
 @media(max-width:768px){.hero-stats>div+div::before{display:none}}
+
+/* Cookie banner */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,26,60,.97);backdrop-filter:blur(16px);color:#EDEFF5;padding:22px 40px;transform:translateY(100%);transition:transform .5s cubic-bezier(.2,.7,.3,1);font-size:14px;line-height:1.65}
+.cookie-banner.visible{transform:translateY(0)}
+.cookie-banner-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.cookie-banner p{margin:0;font-weight:300;color:#A9B1C7;flex:1;min-width:260px}
+.cookie-banner p a{color:#C0A15A;text-decoration:underline;text-underline-offset:3px}
+.cookie-banner-btns{display:flex;gap:10px;flex-shrink:0}
+.cookie-btn{font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:11px 22px;border-radius:999px;cursor:pointer;transition:all .35s ease;border:none}
+.cookie-btn-accept{background:#C0A15A;color:#0E1A3C}
+.cookie-btn-accept:hover{background:#d4b86a}
+.cookie-btn-reject{background:transparent;color:#A9B1C7;border:1px solid rgba(237,239,245,.25)}
+.cookie-btn-reject:hover{border-color:#C0A15A;color:#EDEFF5}
+
+/* Privacy modal */
+.privacy-overlay{position:fixed;inset:0;z-index:200;background:rgba(14,26,60,.6);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.privacy-overlay.open{opacity:1;pointer-events:auto}
+.privacy-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);z-index:201;background:#FCFCFB;border-radius:6px;max-width:720px;width:calc(100% - 40px);max-height:80vh;overflow-y:auto;padding:48px 44px;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.7,.3,1)}
+.privacy-overlay.open+.privacy-modal,.privacy-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.privacy-modal h2{font-family:'Playfair Display',serif;font-weight:500;font-size:28px;margin:0 0 24px;color:#0E1A3C}
+.privacy-modal h3{font-family:'Playfair Display',serif;font-weight:400;font-size:18px;margin:28px 0 10px;color:#0E1A3C}
+.privacy-modal p,.privacy-modal li{font-size:15px;line-height:1.75;font-weight:300;color:#4B546F;margin:0 0 12px}
+.privacy-modal ul{padding-left:20px;margin:0 0 12px}
+.privacy-modal-close{position:absolute;top:18px;right:18px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#8A90A3;cursor:pointer;border-radius:50%;transition:background .3s ease}
+.privacy-modal-close:hover{background:rgba(14,26,60,.06)}
+@media(max-width:768px){.privacy-modal{padding:32px 24px}}
+
+/* Footer links */
+.footer-link{color:#8A90A3;transition:color .3s ease;text-decoration:none;cursor:pointer}
+.footer-link:hover{color:#C0A15A}
 </style>
 </head>
 <body>
@@ -425,16 +455,68 @@ a:focus-visible,button:focus-visible{outline:2px solid #C0A15A;outline-offset:3p
           </div>
         </div>
       </div>
-      <div style="margin-top:96px;padding-top:28px;border-top:1px solid rgba(237,239,245,.14);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:13px;color:#8A90A3;font-weight:300">
-        <div style="display:flex;align-items:center;gap:12px">
-          <span style="font-family:'Playfair Display',serif;font-size:18px;color:#EDEFF5">Axon Capital a.s.</span>
-          <span>© <script>document.write(new Date().getFullYear())</script> · www.axoncapital.eu</span>
+      <div style="margin-top:96px;padding-top:28px;border-top:1px solid rgba(237,239,245,.14);display:flex;flex-direction:column;gap:18px;font-size:13px;color:#8A90A3;font-weight:300">
+        <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-family:'Playfair Display',serif;font-size:18px;color:#EDEFF5">Axon Capital a.s.</span>
+            <span>© <script>document.write(new Date().getFullYear())</script> · www.axoncapital.eu</span>
+          </div>
+          <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <a href="javascript:void(0)" onclick="openPrivacy()" class="footer-link">Ochrana osobních údajů</a>
+            <a href="javascript:void(0)" onclick="openPrivacy()" class="footer-link">Cookies</a>
+          </div>
         </div>
-        <div>Uvedená čísla a projekce jsou odhady a mohou se od skutečnosti lišit.</div>
+        <div style="font-size:12px;line-height:1.6;color:#6B7290">Uvedená čísla a projekce jsou odhady a mohou se od skutečnosti lišit. Výkonnost v minulosti nezaručuje budoucí výsledky. Investice do podnikatelských projektů je spojena s rizikem ztráty celé investované částky.</div>
       </div>
     </div>
   </section>
 </main>
+
+<!-- Cookie Banner -->
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-banner-inner">
+    <p>Tento web používá pouze technicky nezbytné cookies pro správné fungování stránky. Žádné analytické ani marketingové cookies nepoužíváme. Více v <a href="javascript:void(0)" onclick="openPrivacy()">zásadách ochrany osobních údajů</a>.</p>
+    <div class="cookie-banner-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Rozumím</button>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy / GDPR Modal -->
+<div class="privacy-overlay" id="privacy-overlay" onclick="closePrivacy()"></div>
+<div class="privacy-modal" id="privacy-modal">
+  <div class="privacy-modal-close" onclick="closePrivacy()">✕</div>
+  <h2>Ochrana osobních údajů</h2>
+  <p><strong>Správce údajů:</strong> Axon Capital a.s., se sídlem Kozí 914/9, 110 00 Praha 1, Česká republika<br>
+  <strong>Kontakt:</strong> info@axoncapital.eu · +420 777 886 472</p>
+
+  <h3>1. Jaké údaje zpracováváme</h3>
+  <p>Zpracováváme pouze údaje, které nám sami poskytnete — zejména prostřednictvím e-mailu nebo telefonu (jméno, e-mailová adresa, telefonní číslo, obsah zprávy). Tento web nepoužívá kontaktní formuláře ani registrační systémy.</p>
+
+  <h3>2. Účel zpracování</h3>
+  <ul>
+    <li>Odpověď na váš dotaz či žádost o schůzku</li>
+    <li>Komunikace ohledně potenciální spolupráce</li>
+    <li>Plnění zákonných povinností</li>
+  </ul>
+
+  <h3>3. Právní základ</h3>
+  <p>Zpracování je založeno na oprávněném zájmu správce (čl. 6 odst. 1 písm. f GDPR) — odpověď na vaši poptávku — nebo na plnění smlouvy či přípravě smlouvy (čl. 6 odst. 1 písm. b GDPR).</p>
+
+  <h3>4. Doba uložení</h3>
+  <p>Osobní údaje uchováváme po dobu nezbytnou pro účel zpracování, nejdéle po dobu 3 let od posledního kontaktu, pokud zákon nestanoví jinak.</p>
+
+  <h3>5. Vaše práva</h3>
+  <p>Máte právo na přístup ke svým údajům, jejich opravu, výmaz, omezení zpracování, přenositelnost a právo vznést námitku. Svá práva můžete uplatnit na adrese info@axoncapital.eu. Máte rovněž právo podat stížnost u Úřadu pro ochranu osobních údajů (uoou.cz).</p>
+
+  <h3>6. Cookies</h3>
+  <p>Tento web používá pouze technicky nezbytné cookies (ukládání preference cookie banneru). Nepoužíváme žádné analytické, reklamní ani sledovací cookies. Nejsou využívány služby třetích stran pro analýzu návštěvnosti.</p>
+
+  <h3>7. Předávání údajů</h3>
+  <p>Osobní údaje nepředáváme třetím stranám s výjimkou případů, kdy to vyžaduje zákon. Údaje nejsou předávány mimo Evropský hospodářský prostor.</p>
+
+  <p style="margin-top:28px;font-size:13px;color:#8A90A3">Poslední aktualizace: září 2026</p>
+</div>
 
 <script>
 var PILLARS = [
@@ -765,6 +847,27 @@ function setupObservers(){
   document.querySelectorAll('[data-count]').forEach(function(el){co.observe(el);});
 }
 
+// ── Cookies & Privacy ──
+function acceptCookies(){
+  localStorage.setItem('axon_cookies','1');
+  var b=document.getElementById('cookie-banner');if(b)b.classList.remove('visible');
+}
+function showCookieBanner(){
+  if(localStorage.getItem('axon_cookies'))return;
+  var b=document.getElementById('cookie-banner');
+  if(b)setTimeout(function(){b.classList.add('visible');},1200);
+}
+function openPrivacy(){
+  var o=document.getElementById('privacy-overlay'),m=document.getElementById('privacy-modal');
+  if(o)o.classList.add('open');if(m)m.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePrivacy(){
+  var o=document.getElementById('privacy-overlay'),m=document.getElementById('privacy-modal');
+  if(o)o.classList.remove('open');if(m)m.classList.remove('open');
+  document.body.style.overflow='';
+}
+
 // ── Mobile Nav ──
 function toggleMobileNav(){
   var ham=document.querySelector('.hamburger'),nav=document.getElementById('mobile-nav');
@@ -819,6 +922,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 
   requestAnimationFrame(function(){setupObservers();});
+  showCookieBanner();
 });
 </script>
 </body>
